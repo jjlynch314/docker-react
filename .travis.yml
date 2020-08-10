@@ -4,8 +4,23 @@ services:
   - docker
   
 before_install:
-  - sudo gem install bundler
+  - gem install bundler
   - docker build -t jjlynch/docker-react -f Dockerfile.dev .
 
 script:
   - docker run -e CI=true jjlynch/docker-react npm run test -- --coverage
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-west-2"
+  app: "docker"
+  env: "Docker-env"
+  bucket_name: "elasticbeanstalk-us-west-2-999086947183"
+  bucket_path: "docker"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  #secret_access_key: $AWS_SECRET_KEY
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
+
